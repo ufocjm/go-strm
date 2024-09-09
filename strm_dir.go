@@ -7,10 +7,14 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sync"
 )
 
-func (c *Client) StrmDir() error {
-	return c.StrmDirPath(c.config.ScanPath)
+func (c *Client) StrmDir() (err error) {
+	c.Load()
+	err = c.StrmDirPath(c.config.ScanPath)
+	c.Clear()
+	return err
 }
 
 func (c *Client) StrmDirPath(alistPath string) error {
@@ -30,7 +34,9 @@ func (c *Client) StrmDirPath(alistPath string) error {
 	if list.Code != 200 {
 		return errors.New("alist request error")
 	}
+	var wg sync.WaitGroup
 	for _, item := range list.Data.Content {
+
 		if item.IsDir {
 			// 创建文件夹 然后递归
 			localPath := filepath.Join(c.config.OutputPath, alistPath, item.Name)
@@ -41,7 +47,6 @@ func (c *Client) StrmDirPath(alistPath string) error {
 				err := os.MkdirAll(localPath, os.ModePerm)
 				if err != nil {
 					log.Fatalf("创建文件夹失败 %v", err)
-					return err
 				}
 			} else {
 				// 目录存在
@@ -49,12 +54,18 @@ func (c *Client) StrmDirPath(alistPath string) error {
 			}
 			c.StrmDirPath(path.Join(alistPath, item.Name))
 		} else {
-			c.Strm(&StrmInfo{
-				sign:      item.Sign,
-				alistPath: alistPath,
-				fileName:  item.Name,
-			})
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				c.Strm(&StrmInfo{
+					sign:      item.Sign,
+					alistPath: alistPath,
+					fileName:  item.Name,
+				})
+			}()
 		}
+
 	}
+	wg.Wait()
 	return nil
 }

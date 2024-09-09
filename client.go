@@ -79,7 +79,6 @@ func NewClient(config *Config) *Client {
 			}
 		}
 	}
-
 	return &Client{
 		alistClient: go_alist.NewClient(config.AlistConfig),
 		config:      config,
