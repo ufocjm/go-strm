@@ -10,10 +10,10 @@ import (
 func (c *Client) Strm(info *StrmInfo) {
 	// 验证是否已经处理过
 	if c.Executed(path.Join(info.alistPath, info.fileName)) {
-		log.Printf("该文件已经处理过，直接跳过 %v", info.fileName)
+		log.Printf("该文件已经处理过，直接跳过 %v", path.Join(info.alistPath, info.fileName))
 		return
 	}
-	alistFileUrl := c.config.AlistConfig.ServerUrl + path.Join("/d", info.alistPath, info.fileName) + "?sign=" + info.sign
+	alistFileUrl := c.config.StrmLinkConfig.UrlPrefix + path.Join("/d", info.alistPath, info.fileName) + "?sign=" + info.sign
 	suffixName := GetSuffixName(info.fileName)
 	if Contains(c.config.VideoSuffix, suffixName) {
 		if c.config.UseHttp {

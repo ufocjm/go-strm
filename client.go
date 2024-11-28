@@ -21,7 +21,7 @@ type Config struct {
 }
 
 type StrmLinkConfig struct {
-	UrlPrefix string // 直链前缀
+	UrlPrefix string // 直链url
 }
 
 type StrmFileConfig struct {

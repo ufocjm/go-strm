@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"sync"
 )
 
 func (c *Client) StrmDir() (err error) {
@@ -34,7 +33,6 @@ func (c *Client) StrmDirPath(alistPath string) error {
 	if list.Code != 200 {
 		return errors.New("alist request error")
 	}
-	var wg sync.WaitGroup
 	for _, item := range list.Data.Content {
 
 		if item.IsDir {
@@ -54,18 +52,13 @@ func (c *Client) StrmDirPath(alistPath string) error {
 			}
 			c.StrmDirPath(path.Join(alistPath, item.Name))
 		} else {
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				c.Strm(&StrmInfo{
-					sign:      item.Sign,
-					alistPath: alistPath,
-					fileName:  item.Name,
-				})
-			}()
+			c.Strm(&StrmInfo{
+				sign:      item.Sign,
+				alistPath: alistPath,
+				fileName:  item.Name,
+			})
 		}
 
 	}
-	wg.Wait()
 	return nil
 }
