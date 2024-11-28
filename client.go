@@ -1,4 +1,4 @@
-package go_strm
+package strm
 
 import (
 	"github.com/ufocjm/go-alist"
@@ -7,11 +7,11 @@ import (
 )
 
 type Client struct {
-	alistClient *go_alist.Client
+	alistClient *alist.Client
 	config      *Config
 }
 type Config struct {
-	AlistConfig    *go_alist.Config
+	AlistConfig    *alist.Config
 	ScanPath       string          // 扫描的路径
 	OutputPath     string          // 输出路径
 	VideoSuffix    []string        // 要扫描的视频后缀名
@@ -80,7 +80,7 @@ func NewClient(config *Config) *Client {
 		}
 	}
 	return &Client{
-		alistClient: go_alist.NewClient(config.AlistConfig),
+		alistClient: alist.NewClient(config.AlistConfig),
 		config:      config,
 	}
 }

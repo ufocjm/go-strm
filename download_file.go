@@ -1,4 +1,4 @@
-package go_strm
+package strm
 
 import (
 	"io"
